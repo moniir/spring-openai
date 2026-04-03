@@ -1,5 +1,6 @@
 package com.example.spring_openai.config;
 
+import com.example.spring_openai.advisors.TokenUsageAuditAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,8 @@ public class ChatClientConfig {
     @Bean
     public ChatClient chatClient(ChatClient.Builder chatClientBuilder){
         return chatClientBuilder
+                .defaultAdvisors(new TokenUsageAuditAdvisor())
+                //or .defaultAdvisors(List.of(new TokenUsageAuditAdvisor()))
                 .defaultSystem("""
                         You are an internal HR assistant. Your role is to help employees with question related to HR policies, such as\s
                         leave policies, working hours, benefits and code of conduct. If any user ask beyond these topics, kindly\s
