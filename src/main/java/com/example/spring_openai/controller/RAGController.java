@@ -25,12 +25,15 @@ public class RAGController {
     @Value("classpath:promptTemplate/systemPromptRandomDataTemplate.st")
     Resource promptTemplate;
 
+    @Value("classpath:promptTemplate/systemPromptTemplateForPDF.st")
+    Resource hrSystemTemplate;
+
     public RAGController(@Qualifier("chatMemoryChatClient") ChatClient chatClient, VectorStore vectorStore) {
         this.chatClient = chatClient;
         this.vectorStore = vectorStore;
     }
 
-    @GetMapping("/random/chat")
+   /* @GetMapping("/random/chat")
     public ResponseEntity<String> randomChat(@RequestHeader("username") String username,
                                              @RequestParam("message") String message) {
 
@@ -40,6 +43,20 @@ public class RAGController {
                 .map(Document::getText)
                 .collect(Collectors.joining(System.lineSeparator())); // extract text based on probability and Joins them into one big string.
         String answer = chatClient.prompt().system(promptSystemSpec -> promptSystemSpec.text(promptTemplate).param("documents", similarCOntext))
+                .advisors(a -> a.param(CONVERSATION_ID, username))
+                .user(message).call().content();
+        return ResponseEntity.ok(answer);
+    }*/
+
+    @GetMapping("/hrpolicy/chat")
+    public ResponseEntity<String> hrPolicyChat(@RequestHeader("username") String username, @RequestParam("message") String message) {
+        SearchRequest searchRequest = SearchRequest.builder().query(message).topK(3)
+                .similarityThreshold(0.6).build();
+        List<Document> similarDocs = vectorStore.similaritySearch(searchRequest);
+        String similarContext = similarDocs.stream().map(Document::getText)
+                .collect(Collectors.joining(System.lineSeparator()));
+        String answer = chatClient.prompt()
+                .system(promptSystemSpec -> promptSystemSpec.text(hrSystemTemplate).param("documents", similarContext))
                 .advisors(a -> a.param(CONVERSATION_ID, username))
                 .user(message).call().content();
         return ResponseEntity.ok(answer);
