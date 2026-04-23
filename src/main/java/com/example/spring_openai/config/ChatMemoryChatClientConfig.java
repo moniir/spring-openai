@@ -1,6 +1,7 @@
 package com.example.spring_openai.config;
 
 import com.example.spring_openai.advisors.TokenUsageAuditAdvisor;
+import com.example.spring_openai.rag.WebSearchDocumentRetriever;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
