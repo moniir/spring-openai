@@ -50,13 +50,13 @@ public class RAGController {
 
     @GetMapping("/hrpolicy/chat")
     public ResponseEntity<String> hrPolicyChat(@RequestHeader("username") String username, @RequestParam("message") String message) {
-        SearchRequest searchRequest = SearchRequest.builder().query(message).topK(3)
+       /* SearchRequest searchRequest = SearchRequest.builder().query(message).topK(3)
                 .similarityThreshold(0.6).build();
         List<Document> similarDocs = vectorStore.similaritySearch(searchRequest);
         String similarContext = similarDocs.stream().map(Document::getText)
-                .collect(Collectors.joining(System.lineSeparator()));
+                .collect(Collectors.joining(System.lineSeparator()));*/
         String answer = chatClient.prompt()
-                .system(promptSystemSpec -> promptSystemSpec.text(hrSystemTemplate).param("documents", similarContext))
+//                .system(promptSystemSpec -> promptSystemSpec.text(hrSystemTemplate).param("documents", similarContext))
                 .advisors(a -> a.param(CONVERSATION_ID, username))
                 .user(message).call().content();
         return ResponseEntity.ok(answer);
