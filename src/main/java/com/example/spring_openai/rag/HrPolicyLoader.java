@@ -31,7 +31,9 @@ public class HrPolicyLoader {
                 .withChunkSize(100)
                 .withMaxNumChunks(400)
                 .build();
-        vectorStore.add(textSplitter.split(docs));
-
+        List<Document> chunks = textSplitter.split(docs);
+        if (!chunks.isEmpty()) {
+            vectorStore.add(chunks);
+        }
     }
 }
